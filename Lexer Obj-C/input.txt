@@ -1,0 +1,44 @@
+num = 1
+123.1
+== 
+>= 
+< 
+<= 
+<<
+<<=
+>>
+>>=
+123 + 1
+123 += 1
+123 - 1
+123 -= 1
+4 / 2
+a != b
+a ! b
+a * b
+a *= b
+a % b
+a %= b
+auto
+()
+[]
+{}
+a,b
+s:d;
+'asdf'
+"asdf"
+|
+||
+|=
+&
+&&
+&=
+^
+^=
+~
+.
+float
+signed
+// this is comment
+/* this is multicomment *
+***/
