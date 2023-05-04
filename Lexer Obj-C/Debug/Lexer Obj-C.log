@@ -1,2 +1,3 @@
-﻿  Main.cpp
+﻿  Lexer.cpp
+F:\Learning\3d-Course\Compiler\Lexer Obj-C\Lexer Obj-C\Lexer.cpp(126): warning C4715: Lexer::esc_sequence: значение возвращается не при всех путях выполнения
   Lexer Obj-C.vcxproj -> F:\Learning\3d-Course\Compiler\Lexer Obj-C\Debug\Lexer Obj-C.exe

@@ -13,7 +13,7 @@ std::string keywords[] = { "auto",			"break",		"case",			"char",					"const",
 						"unsigned",			"void",			"volatile",		"while",				"_Packed", 
 						"implementation",	"CGFloat",		"strong",		"readonly"};
 
-Lexer::Lexer(string path) {
+Lexer::Lexer(std::string path) {
 	file.open(path);
 	if (!file.is_open()) {
 		cout << "Couldn't open file";
@@ -70,6 +70,115 @@ Token Lexer::number() {
 	return Token(Token::Kind::Number, str);
 }
 
+Token Lexer::preprocessor() {
+	std::string preprocessors[] = { "define", "import", "include", "ifdef", "ifndef", "else", "endif", "pragma" };
+	std::string str = "";
+	while (is_letter(file.peek())) {
+		str += file.get();
+	}
+	int arr_length = sizeof(preprocessors) / sizeof(std::string);
+	for (int i = 0; i < arr_length; i++) {
+		if (str == preprocessors[i]) {
+			return Token(Token::Kind::Preprocessor, "#" + str);
+		}
+	}
+	return Token(Token::Kind::Unexpected, "#" + str);
+}
+char Lexer::esc_sequence() {
+	char c_next = file.get();
+	switch (c_next) {
+	case 'n':
+		return '\n';
+		break;
+	case 'b':
+		return '\b';
+		break;
+	case 'f':
+		return '\f';
+		break;
+	case 'r':
+		return '\r';
+		break;
+	case 't':
+		return '\t';
+		break;
+	case 'v':
+		return '\v';
+		break;
+	case '\\':
+		return '\\';
+		break;
+	case '\'':
+		return '\'';
+		break;
+	case '"':
+		return '\"';
+		break;
+	case '\?':
+		return '\?';
+		break;
+	case '\0':
+		return '\0';
+		break;
+	default:
+		break;
+	}
+}
+
+Token Lexer::string() {
+	std::string str = "\"";
+	while (file.peek() != '"' && !file.eof()) {
+		if (file.peek() == '\n') {
+			return Token(Token::Kind::Unexpected, str);
+		}
+
+		char c_slash = file.peek();
+		if (c_slash == '\\' && file.peek() && !file.eof()) {
+			file.get();
+			str += esc_sequence();
+		}
+		else if (file.peek() && !file.eof()) {
+			str += file.get();
+		}
+		else {
+			return Token(Token::Kind::Unexpected, str);
+		}
+	}
+	if (file.eof() || file.peek() != '\"') {
+		return Token(Token::Kind::Unexpected, str);
+	}
+	str += file.get();
+	return Token(Token::Kind::String, str);
+}
+
+Token Lexer::charecter() {
+	std::string str = "\'";
+	if (file.peek() == '\n') {
+		return Token(Token::Kind::Unexpected, str);
+	}
+	if(file.peek() != '\'' && !file.eof()) {
+		bool c_slash = file.peek() == '\\';
+		if (c_slash && file.peek() && !file.eof()) {
+			file.get();
+			str += esc_sequence();
+		}
+		else if (file.peek() && !file.eof()) {
+			str += file.get();
+		}
+		else {
+			return Token(Token::Kind::Unexpected, str);
+		}
+	}
+	if (file.peek() != '\'' || file.eof()) {
+		return Token(Token::Kind::Unexpected, str);
+	}
+	str += file.get();
+	return Token(Token::Kind::Char, str);
+}
+
+
+
+
 Token Lexer::next() {
 	while (is_space(file.peek())) file.get();
 
@@ -114,6 +223,9 @@ Token Lexer::next() {
 			{
 				return Token(Token::Kind::GreaterThan, ">");
 			}
+			break;
+		case '#':
+			return preprocessor();
 			break;
 		case '<':
 			if (file.peek() == '=') {
@@ -259,29 +371,12 @@ Token Lexer::next() {
 			break;
 		case '\'':
 		{
-			std::string str = "'";
-			while (file.peek() && !file.eof()) {
-				if (file.peek() == '\'') {
-					str += file.get();
-					return Token(Token::Kind::Char, str);
-				}
-				str += file.get();
-			}
-			return Token(Token::Kind::Unexpected, str);
+			return charecter();
 			break;
 		}
 		case '"':
 		{
-			std::string str = "\"";
-			while (file.peek() && !file.eof()) {
-				if (file.peek() == '"') {
-					str += file.get();
-					return Token(Token::Kind::String, str);
-				}
-				str += file.get();
-			}
-			return Token(Token::Kind::Unexpected, str);
-			break;
+			return string();
 		}
 		case '|':
 			if (file.peek() == '|') {
@@ -328,6 +423,7 @@ Token Lexer::next() {
 			return Token(Token::Kind::Dot, ".");
 			break;
 		default:
+			return Token(Token::Kind::Unexpected, "");
 			break;
 		}
 	}

@@ -58,6 +58,7 @@ public:
         RightShiftAssignment,       // >>=
         Unexpected,                 // 
         Keyword,                    // example: "auto"
+        Preprocessor,               // #define
     };
 
     

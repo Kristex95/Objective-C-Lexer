@@ -16,7 +16,7 @@ std::ostream& operator<<(std::ostream& os, const Token::Kind& kind) {
         "BitOr",            "LogicalOr",            "LogicalOrAssignment",  "BitAnd",                   "LogicalAnd",             
         "BitAndAssignment", "BitXOR",               "BitXORAssignment",     "BitNOT",                   "End",
         "LeftShift",        "LeftShiftAssignment",  "RightShift",           "RightShiftAssignment",
-        "Unexpected",       "Keyword",
+        "Unexpected",       "Keyword",              "Preprocessor"
     };
     return os << names[static_cast<int>(kind)];
 }

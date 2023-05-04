@@ -21,6 +21,10 @@ public:
 	bool is_space(char c);
 	Token identifier();
 	Token number();
+	Token preprocessor();
+	char esc_sequence();
+	Token string();
+	Token charecter();
 	Token next();
 	
 };
